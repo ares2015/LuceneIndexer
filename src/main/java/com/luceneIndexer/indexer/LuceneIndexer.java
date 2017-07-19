@@ -20,7 +20,8 @@ import java.util.List;
  */
 public class LuceneIndexer {
 
-    private static final String DATA_PATH = "C:\\Users\\Oliver\\Documents\\NlpTrainingData\\SemanticExtraction\\LuceneTestData.txt";
+    //    private static final String DATA_PATH = "C:\\Users\\Oliver\\Documents\\NlpTrainingData\\SemanticExtraction\\LuceneTestData.txt";
+    private static final String DATA_PATH = "C:\\Users\\Oliver\\Documents\\NlpTrainingData\\SemanticExtraction\\WikipediaAggregatedData.txt";
 
     public static void main(String[] args) throws IOException {
         int numberOfSentences = 0;
@@ -49,7 +50,7 @@ public class LuceneIndexer {
                         Document doc = new Document();
                         System.out.println("Indexing -> sentence: " + sentence + ", topic: " + topic);
                         doc.add(new TextField("sentence", sentence, Field.Store.YES));
-                        doc.add(new TextField("topic", topic, Field.Store.YES));
+//                        doc.add(new TextField("topic", topic, Field.Store.YES));
                         docList.add(doc);
                     } catch (Exception e) {
                         rowToIndex = br.readLine();
@@ -63,8 +64,12 @@ public class LuceneIndexer {
         try {
             IndexWriter writer = new IndexWriter(indexDir, config);
             int count = 0;
+            int nrWrittenSentences = 0;
             for (Document d : docList) {
+                System.out.println("Writing into index: " + d.getField("sentence"));
                 writer.addDocument(d);
+                nrWrittenSentences++;
+                System.out.println("Number of written sentences: " + nrWrittenSentences);
                 // make sure we get 2 segments
                 if (++count % 5 == 0) {
                     writer.commit();

@@ -38,26 +38,38 @@ public class SpanQueryTest {
         IndexReader reader = DirectoryReader.open(directory);
         IndexSearcher searcher = new IndexSearcher(reader);
 
-        SpanTermQuery directed = new SpanTermQuery(new Term("sentence", "directed"));
-        SpanTermQuery elMariachi = new SpanTermQuery(new Term("sentence", "film"));
+//        SpanTermQuery directed = new SpanTermQuery(new Term("sentence", "directed"));
+//        SpanTermQuery elMariachi = new SpanTermQuery(new Term("sentence", "film"));
+//
+//        SpanNearQuery nearQueryMariachi = new SpanNearQuery(new SpanQuery[]{directed, elMariachi}, 100, true);
+//
+//        Map<Term, TermContext> termContextsMariachi = new HashMap<>();
+//        Spans spansMariachi = nearQueryMariachi.getSpans(reader.getContext().leaves().get(0), null, termContextsMariachi);
+//        List<String> logMariachi = dumpSpans(spansMariachi);
+//        System.out.println(logMariachi.get(0));
+//
+//
+//        SpanTermQuery was = new SpanTermQuery(new Term("sentence", "was"));
+//        SpanTermQuery washington = new SpanTermQuery(new Term("sentence", "washington"));
+//
+//        SpanNearQuery nearQueryWashington = new SpanNearQuery(new SpanQuery[]{washington, was}, 100, true);
+//
+//        Map<Term, TermContext> termContextsWashington = new HashMap<>();
+//        Spans spansWashington = nearQueryWashington.getSpans(reader.getContext().leaves().get(0), null, termContextsWashington);
+//        List<String> logWashington = dumpSpans(spansWashington);
+//        System.out.println(logWashington.get(0));
 
-        SpanNearQuery nearQueryMariachi = new SpanNearQuery(new SpanQuery[]{directed, elMariachi}, 100, true);
+        SpanTermQuery term1 = new SpanTermQuery(new Term("sentence", "luther"));
+        SpanTermQuery term2 = new SpanTermQuery(new Term("sentence", "was"));
 
-        Map<Term, TermContext> termContextsMariachi = new HashMap<>();
-        Spans spansMariachi = nearQueryMariachi.getSpans(reader.getContext().leaves().get(0), null, termContextsMariachi);
-        List<String> logMariachi = dumpSpans(spansMariachi);
-        System.out.println(logMariachi.get(0));
+        SpanNearQuery nearQuery = new SpanNearQuery(new SpanQuery[]{term1, term2}, 5, true);
 
-
-        SpanTermQuery was = new SpanTermQuery(new Term("sentence", "was"));
-        SpanTermQuery washington = new SpanTermQuery(new Term("sentence", "washington"));
-
-        SpanNearQuery nearQueryWashington = new SpanNearQuery(new SpanQuery[]{washington, was}, 100, true);
-
-        Map<Term, TermContext> termContextsWashington = new HashMap<>();
-        Spans spansWashington = nearQueryWashington.getSpans(reader.getContext().leaves().get(0), null, termContextsWashington);
-        List<String> logWashington = dumpSpans(spansWashington);
-        System.out.println(logWashington.get(0));
+        Map<Term, TermContext> termContexts = new HashMap<>();
+        Spans spans = nearQuery.getSpans(reader.getContext().leaves().get(0), null, termContexts);
+        List<String> log = dumpSpans(spans);
+        for (String answer : log) {
+            System.out.println(answer);
+        }
 
 
 //        SpanTermQuery frog = new SpanTermQuery(new Term("span", "frog"));

@@ -27,6 +27,7 @@ public class LuceneIndexer {
         int numberOfSentences = 0;
         Directory indexDir = FSDirectory.open(new File("C:\\Users\\Oliver\\Documents\\NlpTrainingData\\Lucene\\Index"));
         IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_10_0, new StandardAnalyzer(CharArraySet.EMPTY_SET));
+        config.setOpenMode(IndexWriterConfig.OpenMode.APPEND);
 
         List<Document> docList = new ArrayList<Document>();
         BufferedReader br = null;

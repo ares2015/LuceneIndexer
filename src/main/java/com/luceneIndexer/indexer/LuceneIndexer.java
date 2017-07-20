@@ -85,6 +85,9 @@ public class LuceneIndexer {
         long elapsedTime = stopTime - startTime;
         System.out.println(numberOfSentences + " sentences indexed in " + (elapsedTime / 1000) / 60 + " minutes and "
                 + +(elapsedTime / 1000) % 60 + " seconds");
+        PrintWriter pw1 = new PrintWriter(DATA_PATH);
+        pw1.close();
+
     }
 
 }

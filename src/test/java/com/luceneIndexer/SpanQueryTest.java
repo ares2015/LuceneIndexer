@@ -59,10 +59,10 @@ public class SpanQueryTest {
 //        List<String> logWashington = dumpSpans(spansWashington);
 //        System.out.println(logWashington.get(0));
 
-        SpanTermQuery term1 = new SpanTermQuery(new Term("sentence", "luther"));
+        SpanTermQuery term1 = new SpanTermQuery(new Term("sentence", "Booth"));
         SpanTermQuery term2 = new SpanTermQuery(new Term("sentence", "was"));
 
-        SpanNearQuery nearQuery = new SpanNearQuery(new SpanQuery[]{term1, term2}, 5, true);
+        SpanNearQuery nearQuery = new SpanNearQuery(new SpanQuery[]{term1, term2}, 100, true);
 
         Map<Term, TermContext> termContexts = new HashMap<>();
         Spans spans = nearQuery.getSpans(reader.getContext().leaves().get(0), null, termContexts);

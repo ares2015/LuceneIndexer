@@ -1,5 +1,7 @@
 package com.luceneIndexer.indexer;
 
+import com.luceneIndexer.indexer.tagger.PosTagger;
+import com.luceneIndexer.indexer.tagger.PosTaggerImpl;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.document.Document;
@@ -22,11 +24,12 @@ import java.util.concurrent.Future;
  */
 public class LuceneIndexer {
 
-    //    private static final String DATA_PATH = "C:\\Users\\Oliver\\Documents\\NlpTrainingData\\SemanticExtraction\\LuceneTestData.txt";
-    private static final String DATA_PATH = "C:\\Users\\Oliver\\Documents\\NlpTrainingData\\SemanticExtraction\\WikipediaAggregatedData.txt";
+    private static final String DATA_PATH = "C:\\Users\\Oliver\\Documents\\NlpTrainingData\\SemanticExtraction\\LuceneTestData.txt";
+//    private static final String DATA_PATH = "C:\\Users\\Oliver\\Documents\\NlpTrainingData\\SemanticExtraction\\WikipediaAggregatedData.txt";
 
     public static void main(String[] args) throws IOException {
-        int numberOfSentences = 0;
+        PosTagger posTagger = new PosTaggerImpl();
+        int numberOfSentencesIndexed = 0;
         Directory indexDir = FSDirectory.open(new File("C:\\Users\\Oliver\\Documents\\NlpTrainingData\\Lucene\\Index"));
         IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_10_0, new StandardAnalyzer(CharArraySet.EMPTY_SET));
 //        config.setOpenMode(IndexWriterConfig.OpenMode.APPEND);
@@ -47,16 +50,21 @@ public class LuceneIndexer {
                 if (!"".equals(rowToIndex)) {
                     String[] split = rowToIndex.split("#");
                     String sentence = split[0];
-                    String topic = split[1];
-                    numberOfSentences++;
-                    try {
-                        Document doc = new Document();
-                        System.out.println("Indexing -> sentence: " + sentence + ", topic: " + topic);
-                        doc.add(new TextField("sentence", sentence, Field.Store.YES));
+                    String[] tokens = sentence.split(" ");
+                    List<String> tagsList = posTagger.tag(sentence);
+                    if (tokens.length >= 2 && tagsList.get(0).contains("N") &&
+                            (tagsList.get(0).contains("V") || tagsList.get(0).contains("IA"))) {
+                        String topic = split[1];
+                        numberOfSentencesIndexed++;
+                        try {
+                            Document doc = new Document();
+                            System.out.println("Indexing -> sentence: " + sentence + ", topic: " + topic);
+                            doc.add(new TextField("sentence", sentence, Field.Store.YES));
 //                        doc.add(new TextField("topic", topic, Field.Store.YES));
-                        docList.add(doc);
-                    } catch (Exception e) {
-                        rowToIndex = br.readLine();
+                            docList.add(doc);
+                        } catch (Exception e) {
+                            rowToIndex = br.readLine();
+                        }
                     }
                 }
                 rowToIndex = br.readLine();
@@ -93,10 +101,10 @@ public class LuceneIndexer {
 
         long stopTime = System.currentTimeMillis();
         long elapsedTime = stopTime - startTime;
-        System.out.println(numberOfSentences + " sentences indexed in " + (elapsedTime / 1000) / 60 + " minutes and "
+        System.out.println(numberOfSentencesIndexed + " sentences indexed in " + (elapsedTime / 1000) / 60 + " minutes and "
                 + +(elapsedTime / 1000) % 60 + " seconds");
-        PrintWriter pw1 = new PrintWriter(DATA_PATH);
-        pw1.close();
+//        PrintWriter pw1 = new PrintWriter(DATA_PATH);
+//        pw1.close();
 
     }
 

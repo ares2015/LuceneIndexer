@@ -24,8 +24,8 @@ import java.util.concurrent.Future;
  */
 public class LuceneIndexer {
 
-    private static final String DATA_PATH = "C:\\Users\\Oliver\\Documents\\NlpTrainingData\\SemanticExtraction\\LuceneTestData.txt";
-//    private static final String DATA_PATH = "C:\\Users\\Oliver\\Documents\\NlpTrainingData\\SemanticExtraction\\WikipediaAggregatedData.txt";
+    //    private static final String DATA_PATH = "C:\\Users\\Oliver\\Documents\\NlpTrainingData\\SemanticExtraction\\LuceneTestData.txt";
+    private static final String DATA_PATH = "C:\\Users\\Oliver\\Documents\\NlpTrainingData\\SemanticExtraction\\WikipediaAggregatedData.txt";
 
     public static void main(String[] args) throws IOException {
         PosTagger posTagger = new PosTaggerImpl();
@@ -48,23 +48,24 @@ public class LuceneIndexer {
             String rowToIndex = br.readLine();
             while (rowToIndex != null) {
                 if (!"".equals(rowToIndex)) {
-                    String[] split = rowToIndex.split("#");
-                    String sentence = split[0];
-                    String[] tokens = sentence.split(" ");
-                    List<String> tagsList = posTagger.tag(sentence);
-                    if (tokens.length >= 2 && tagsList.get(0).contains("N") &&
-                            (tagsList.get(0).contains("V") || tagsList.get(0).contains("IA"))) {
-                        String topic = split[1];
-                        numberOfSentencesIndexed++;
-                        try {
+                    try {
+                        String[] split = rowToIndex.split("#");
+                        String sentence = split[0];
+                        String[] tokens = sentence.split(" ");
+                        List<String> tagsList = posTagger.tag(sentence);
+                        if (tokens.length >= 2 && tagsList.get(0).contains("N") &&
+                                (tagsList.get(0).contains("V") || tagsList.get(0).contains("IA"))) {
+                            String topic = split[1];
+                            numberOfSentencesIndexed++;
+
                             Document doc = new Document();
                             System.out.println("Indexing -> sentence: " + sentence + ", topic: " + topic);
                             doc.add(new TextField("sentence", sentence, Field.Store.YES));
 //                        doc.add(new TextField("topic", topic, Field.Store.YES));
                             docList.add(doc);
-                        } catch (Exception e) {
-                            rowToIndex = br.readLine();
                         }
+                    } catch (Exception e) {
+                        rowToIndex = br.readLine();
                     }
                 }
                 rowToIndex = br.readLine();

@@ -15,9 +15,6 @@ import org.apache.lucene.util.Version;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 /**
  * Created by Oliver on 7/17/2017.
@@ -54,7 +51,8 @@ public class LuceneIndexer {
                         String[] tokens = sentence.split(" ");
                         List<String> tagsList = posTagger.tag(sentence);
                         if (tokens.length >= 2 && tagsList.get(0).contains("N") &&
-                                (tagsList.get(0).contains("V") || tagsList.get(0).contains("IA"))) {
+                                (tagsList.get(0).contains("V") || tagsList.get(0).contains("Ved") || tagsList.get(0).contains("IA")
+                                        || tagsList.get(0).contains("H"))) {
                             String topic = split[1];
                             numberOfSentencesIndexed++;
 
@@ -74,36 +72,39 @@ public class LuceneIndexer {
             e.printStackTrace();
         }
 
-        int sublistSize = docList.size() / 4;
+        LuceneIndexWriter writer = new LuceneIndexWriter(docList);
+        writer.write();
 
-        List<Document> sublist1 = docList.subList(0, sublistSize);
-        List<Document> sublist2 = docList.subList(sublistSize, sublistSize * 2);
-        List<Document> sublist3 = docList.subList(sublistSize * 2, sublistSize * 3);
-        List<Document> sublist4 = docList.subList(sublistSize * 3, sublistSize * 4);
-
-        ExecutorService executor = Executors.newFixedThreadPool(4);
-
-        Runnable writer1 = new LuceneIndexWriter(sublist1);
-        Runnable writer2 = new LuceneIndexWriter(sublist2);
-        Runnable writer3 = new LuceneIndexWriter(sublist3);
-        Runnable writer4 = new LuceneIndexWriter(sublist4);
-
-        Future<?> future1 = executor.submit(writer1);
-        Future<?> future2 = executor.submit(writer2);
-        Future<?> future3 = executor.submit(writer3);
-        Future<?> future4 = executor.submit(writer4);
-
-
-        boolean areDataWritten = false;
-        while (!areDataWritten) {
-            areDataWritten = !future1.isDone() && !future2.isDone() && !future3.isDone() && !future4.isDone();
-        }
-        executor.shutdown();
-
-        long stopTime = System.currentTimeMillis();
-        long elapsedTime = stopTime - startTime;
-        System.out.println(numberOfSentencesIndexed + " sentences indexed in " + (elapsedTime / 1000) / 60 + " minutes and "
-                + +(elapsedTime / 1000) % 60 + " seconds");
+//        int sublistSize = docList.size() / 4;
+//
+//        List<Document> sublist1 = docList.subList(0, sublistSize);
+//        List<Document> sublist2 = docList.subList(sublistSize, sublistSize * 2);
+//        List<Document> sublist3 = docList.subList(sublistSize * 2, sublistSize * 3);
+//        List<Document> sublist4 = docList.subList(sublistSize * 3, sublistSize * 4);
+//
+//        ExecutorService executor = Executors.newFixedThreadPool(4);
+//
+//        Runnable writer1 = new LuceneIndexWriter(sublist1);
+//        Runnable writer2 = new LuceneIndexWriter(sublist2);
+//        Runnable writer3 = new LuceneIndexWriter(sublist3);
+//        Runnable writer4 = new LuceneIndexWriter(sublist4);
+//
+//        Future<?> future1 = executor.submit(writer1);
+//        Future<?> future2 = executor.submit(writer2);
+//        Future<?> future3 = executor.submit(writer3);
+//        Future<?> future4 = executor.submit(writer4);
+//
+//
+//        boolean areDataWritten = false;
+//        while (!areDataWritten) {
+//            areDataWritten = !future1.isDone() && !future2.isDone() && !future3.isDone() && !future4.isDone();
+//        }
+//        executor.shutdown();
+//
+//        long stopTime = System.currentTimeMillis();
+//        long elapsedTime = stopTime - startTime;
+//        System.out.println(numberOfSentencesIndexed + " sentences indexed in " + (elapsedTime / 1000) / 60 + " minutes and "
+//                + +(elapsedTime / 1000) % 60 + " seconds");
 //        PrintWriter pw1 = new PrintWriter(DATA_PATH);
 //        pw1.close();
 

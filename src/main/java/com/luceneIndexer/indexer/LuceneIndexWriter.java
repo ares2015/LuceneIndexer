@@ -43,12 +43,13 @@ public class LuceneIndexWriter implements Runnable {
                 writer.addDocument(d);
                 nrWrittenSentences++;
                 System.out.println("Number of written sentences: " + nrWrittenSentences);
+                writer.commit();
                 // make sure we get 2 segments
-                if (++count % 5 == 0) {
-                    writer.commit();
-                }
+//                if (++count % 5 == 0) {
+//                    writer.commit();
+//                }
             }
-            writer.commit();
+//            writer.commit();
             writer.close();
         } catch (Exception e) {
             throw new RuntimeException(e);
